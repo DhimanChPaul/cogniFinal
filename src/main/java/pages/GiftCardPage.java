@@ -1,5 +1,6 @@
 package pages;
 
+import base.BasePage;
 import org.openqa.selenium.*;
 
 public class GiftCardPage extends BasePage {
