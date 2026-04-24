@@ -76,7 +76,39 @@ public class SearchResultsPage extends BasePage {
         System.out.println("Clicked: " + buttonText);
     }
 
-    public List<String[]> getAllProductNamesAndPrices(int count) {  // ← takes count now
+    /**
+     * Prints the top N products (name + price) to console.
+     * Used for quick console verification.
+     */
+    public void displayTopProducts(int count, int maxPrice) {
+        pause(5000);
+        scrollBy(0, 300);
+        pause(2000);
+
+        List<WebElement> names  = driver.findElements(PRODUCT_NAMES);
+        List<WebElement> prices = driver.findElements(PRODUCT_PRICES);
+
+        System.out.println("\n===============================================");
+        System.out.println("Total products below ₹" + maxPrice + ": " + names.size());
+        System.out.println("Displaying Top " + count + " products:");
+        System.out.println("===============================================\n");
+
+        int displayed = Math.min(count, names.size());
+        for (int i = 0; i < displayed; i++) {
+            String name  = names.get(i).getText();
+            String price = (i < prices.size()) ? prices.get(i).getText() : "Price N/A";
+            System.out.println((i + 1) + ". " + name);
+            System.out.println("   Price: " + price);
+            System.out.println("-----------------------------------------------");
+        }
+    }
+
+    /**
+     * Returns first `count` product names and prices from results page.
+     * Each String[] has [0] = product name, [1] = price text.
+     * Used for Excel reporting.
+     */
+    public List<String[]> getAllProductNamesAndPrices(int count) {
         pause(2000);
         scrollBy(0, 300);
         pause(1000);
@@ -87,7 +119,7 @@ public class SearchResultsPage extends BasePage {
 
         System.out.println("Total products found: " + names.size());
 
-        int limit = Math.min(count, names.size());  // ← only first 3
+        int limit = Math.min(count, names.size());
 
         for (int i = 0; i < limit; i++) {
             String name  = names.get(i).getText();
