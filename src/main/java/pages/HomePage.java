@@ -22,7 +22,7 @@ public class HomePage extends BasePage {
      */
     public void open(String url) {
         driver.get(url);
-        pause(10000);
+        pause(5000);
         System.out.println("Opened: " + url);
     }
 
@@ -46,7 +46,7 @@ public class HomePage extends BasePage {
         WebElement searchBox = waitForVisibility(SEARCH_INPUT);
         searchBox.sendKeys(keyword);
         actions.sendKeys(Keys.ENTER).perform();
-        pause(8000);
+        pause(3000);
         System.out.println("Searched for: " + keyword);
     }
 
