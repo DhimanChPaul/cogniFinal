@@ -49,3 +49,5 @@ screenshots/
 Resources/
 
 .
+/ExtentReports
+/ExtentReports/TestReport.html

@@ -3,6 +3,9 @@ package pages;
 import Screenshot.projectSshot;
 import base.BasePage;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +13,17 @@ import java.util.List;
 public class SearchResultsPage extends BasePage {
 
     // ── Locators ─────────────────────────────────────────────────────────────────
-    private static final By MORE_FILTERS_BTN = By.xpath("//span[contains(@class,'more-filter')]");
-    private static final By MAX_PRICE_INPUT  = By.xpath("//input[@formcontrolname='inputMax']");
-    private static final By PRODUCT_NAMES    = By.xpath(
-            "//h2[contains(@class,'product-name')] | //a[contains(@class,'product-title')]");
-    private static final By PRODUCT_PRICES   = By.xpath(
-            "//span[contains(@class,'offer-price')] | //span[contains(@class,'price-display')]");
+    @FindBy(xpath = "//span[contains(@class,'more-filter')]")
+    private WebElement moreFiltersBtn;
+
+    @FindBy(xpath = "//input[@formcontrolname='inputMax']")
+    private WebElement maxPriceInput;
+
+    @FindBy(xpath = "//h2[contains(@class,'product-name')] | //a[contains(@class,'product-title')]")
+    private List<WebElement> productNames;
+
+    @FindBy(xpath = "//span[contains(@class,'offer-price')] | //span[contains(@class,'price-display')]")
+    private List<WebElement> productPrices;
 
     // Ensures screenshot #3 fires only once per run (skips tc007's second call)
     private boolean topProductsCaptured = false;
@@ -23,13 +31,14 @@ public class SearchResultsPage extends BasePage {
     // ── Constructor ──────────────────────────────────────────────────────────────
     public SearchResultsPage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(driver, this);
     }
 
     // ── Actions ──────────────────────────────────────────────────────────────────
 
     public void openMoreFilters() {
-        WebElement btn = waitForClickable(MORE_FILTERS_BTN);
-        jsClick(btn);
+        wait.until(ExpectedConditions.elementToBeClickable(moreFiltersBtn));
+        jsClick(moreFiltersBtn);
         pause(2000);
         System.out.println("More Filters panel opened.");
     }
@@ -46,10 +55,10 @@ public class SearchResultsPage extends BasePage {
     }
 
     public void setMaxPrice(int maxPrice) {
-        WebElement maxInput = waitForPresence(MAX_PRICE_INPUT);
-        scrollIntoView(maxInput);
+        wait.until(ExpectedConditions.visibilityOf(maxPriceInput));
+        scrollIntoView(maxPriceInput);
         pause(1000);
-        actions.moveToElement(maxInput)
+        actions.moveToElement(maxPriceInput)
                 .click()
                 .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
                 .sendKeys(Keys.DELETE)
@@ -92,18 +101,15 @@ public class SearchResultsPage extends BasePage {
         scrollBy(0, 300);
         pause(2000);
 
-        List<WebElement> names  = driver.findElements(PRODUCT_NAMES);
-        List<WebElement> prices = driver.findElements(PRODUCT_PRICES);
-
         System.out.println("\n===============================================");
-        System.out.println("Total products below ₹" + maxPrice + ": " + names.size());
+        System.out.println("Total products below ₹" + maxPrice + ": " + productNames.size());
         System.out.println("Displaying Top " + count + " products:");
         System.out.println("===============================================\n");
 
-        int displayed = Math.min(count, names.size());
+        int displayed = Math.min(count, productNames.size());
         for (int i = 0; i < displayed; i++) {
-            String name  = names.get(i).getText();
-            String price = (i < prices.size()) ? prices.get(i).getText() : "Price N/A";
+            String name  = productNames.get(i).getText();
+            String price = (i < productPrices.size()) ? productPrices.get(i).getText() : "Price N/A";
             System.out.println((i + 1) + ". " + name);
             System.out.println("   Price: " + price);
             System.out.println("-----------------------------------------------");
@@ -121,16 +127,14 @@ public class SearchResultsPage extends BasePage {
         pause(1000);
 
         List<String[]>   products = new ArrayList<>();
-        List<WebElement> names    = driver.findElements(PRODUCT_NAMES);
-        List<WebElement> prices   = driver.findElements(PRODUCT_PRICES);
 
-        System.out.println("Total products found: " + names.size());
+        System.out.println("Total products found: " + productNames.size());
 
-        int limit = Math.min(count, names.size());
+        int limit = Math.min(count, productNames.size());
 
         for (int i = 0; i < limit; i++) {
-            String name  = names.get(i).getText();
-            String price = (i < prices.size()) ? prices.get(i).getText() : "0";
+            String name  = productNames.get(i).getText();
+            String price = (i < productPrices.size()) ? productPrices.get(i).getText() : "0";
             if (!name.isEmpty() && !price.isEmpty()) {
                 products.add(new String[]{name, price});
                 System.out.println("Product: " + name + " | Price: " + price);
@@ -146,5 +150,3 @@ public class SearchResultsPage extends BasePage {
         return products;
     }
 }
-
-

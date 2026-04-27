@@ -3,17 +3,23 @@ package pages;
 import Screenshot.projectSshot;
 import base.BasePage;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class HomePage extends BasePage {
 
     // ── Locators ─────────────────────────────────────────────────────────────────
-    private static final By POPUP_CLOSE     = By.xpath("//div[@class='modal-body']/a");
-    private static final By SEARCH_INPUT    = By.xpath("//input[@id='search']");
-    private static final By GIFT_CARDS_LINK = By.xpath("//a[normalize-space()='GIFT CARDS']");
+    @FindBy(xpath = "//input[@id='search']")
+    private WebElement searchInput;
+
+    @FindBy(xpath = "//a[normalize-space()='GIFT CARDS']")
+    private WebElement giftCardsLink;
 
     // ── Constructor ──────────────────────────────────────────────────────────────
     public HomePage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(driver, this);
     }
 
     // ── Actions ──────────────────────────────────────────────────────────────────
@@ -28,8 +34,8 @@ public class HomePage extends BasePage {
     /** Closes the popup if it appears on page load. */
     public void closePopupIfPresent() {
         try {
-            WebElement closeBtn = driver.findElement(POPUP_CLOSE);
-            jsClick(closeBtn);
+            WebElement popupClose = driver.findElement(By.xpath("//div[@class='modal-body']/a"));
+            jsClick(popupClose);
             System.out.println("Popup closed.");
         } catch (Exception e) {
             System.out.println("No popup found.");
@@ -38,8 +44,8 @@ public class HomePage extends BasePage {
 
     /** Types keyword in the search box and hits ENTER. */
     public void searchFor(String keyword) {
-        WebElement searchBox = waitForVisibility(SEARCH_INPUT);
-        searchBox.sendKeys(keyword);
+        wait.until(ExpectedConditions.visibilityOf(searchInput));
+        searchInput.sendKeys(keyword);
         actions.sendKeys(Keys.ENTER).perform();
         pause(3000);
         System.out.println("Searched for: " + keyword);
@@ -53,7 +59,7 @@ public class HomePage extends BasePage {
         pause(2000);
         scrollBy(0, -300);
         pause(2000);
-        driver.findElement(GIFT_CARDS_LINK).click();
+        giftCardsLink.click();
         pause(1000);
         System.out.println("Navigated to Gift Cards.");
     }

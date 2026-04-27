@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="AllTestsSuite">
+  <listeners>
+    <listener class-name="listeners.ExtentReportListener"/>
+  </listeners>
+  <test name="PepperfryTest">
+    <classes>
+      <class name="tests.PepperfryTest"/>
+    </classes>
+  </test>
+</suite>
