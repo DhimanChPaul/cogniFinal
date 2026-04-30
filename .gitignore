@@ -44,10 +44,12 @@ build/
 screenshots/
 *.png
 
+.claude/
+
 # Excel files
 *.xlsx
 *.xls
-Resources/
+ExcelData/
 
 # ExtentReports
 /ExtentReports
