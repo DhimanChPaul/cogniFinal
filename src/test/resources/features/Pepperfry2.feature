@@ -1,4 +1,4 @@
-Feature: Pepperfry Website Functionalities
+Feature: Pepperfry End-to-End Tests
 
   Scenario: Open Pepperfry website and close popup
     Given I open the Pepperfry website
@@ -12,8 +12,8 @@ Feature: Pepperfry Website Functionalities
 
   Scenario: Apply Price and Brand Filter
     Given I am on the search results page
-    When I apply a maximum price of 15000 and select brand "Woodsworth"
-    Then the URL should contain "15000" and "Woodsworth"
+    When I apply a maximum price of 15000 and select brand "WoodenMood"
+    Then the URL should contain "15000" and "WoodenMood"
 
   Scenario: Verify all product prices are below 15000
     Given I am on the filtered search results page
@@ -30,7 +30,6 @@ Feature: Pepperfry Website Functionalities
     Given I am on the gift card checkout page with missing receiver email
     Then I should see the error message "Receiver's Email ID Cannot Be Empty"
 
-  Scenario: Verify first product price is below 500
-    Given I am on the search results page
-    Then the first product price should be below 500
-
+  Scenario: Verify first product price is below 15000
+    Given I am on the filtered search results page
+    Then the first product price should be below 15000

@@ -1,3 +1,4 @@
+
 package pages;
 
 import Screenshot.projectSshot;
@@ -50,16 +51,37 @@ public class HomePage extends BaseClass {
         pause(3000);
         System.out.println("Searched for: " + keyword);
 
-        // 📸 Screenshot #1 — BEFORE filter (search results page, no filters yet)
+        // Screenshot #1 — BEFORE filter
         projectSshot.capture(driver, "1_BeforeFilter");
     }
 
-    /** Scrolls up and clicks the GIFT CARDS navigation link. */
+    /**
+     * Navigates to the Gift Cards page.
+     *
+     * FIX: replaced element.click() with jsClick() to bypass the
+     * drawer-overlay div that intercepts clicks after the filter panel
+     * is used. Also waits for the overlay to disappear first, and falls
+     * back to JS click if the overlay is still blocking.
+     */
     public void goToGiftCards() {
         pause(2000);
         scrollBy(0, -300);
-        pause(2000);
-        giftCardsLink.click();
+        pause(1000);
+
+        // Wait for any lingering drawer-overlay to disappear before clicking
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                    By.xpath("//div[contains(@class,'drawer-overlay')]")));
+            System.out.println("Overlay cleared — safe to click GIFT CARDS.");
+        } catch (Exception e) {
+            System.out.println("Overlay wait timed out — attempting JS click anyway.");
+        }
+
+        // Use JS click so the drawer-overlay cannot intercept it
+        wait.until(ExpectedConditions.visibilityOf(giftCardsLink));
+        scrollIntoView(giftCardsLink);
+        pause(500);
+        jsClick(giftCardsLink);
         pause(1000);
         System.out.println("Navigated to Gift Cards.");
     }

@@ -1,3 +1,4 @@
+
 package tests;
 
 import factory.BaseClass;
@@ -23,7 +24,12 @@ public class PepperfryTest {
     SearchResultsPage resultsPage;
     GiftCardPage      giftPage;
     ExcelReporter     reporter;
-    int               serial = 1;
+
+    // FIX: single counter incremented once per log() call — no more double-increment
+    int serial = 1;
+
+    // Keeps the filtered-results URL so tc007 can navigate back to it
+    private String filteredResultsUrl;
 
     @BeforeClass
     public void setUp() throws Exception {
@@ -32,7 +38,8 @@ public class PepperfryTest {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        // FIX: removed implicitlyWait — mixing it with WebDriverWait (explicit) causes
+        //      unpredictable timeouts. BaseClass uses explicit waits throughout.
         driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
 
         p = BaseClass.getProperties();
@@ -103,10 +110,15 @@ public class PepperfryTest {
             resultsPage.expandFilter(p.getProperty("brand.filter"));
             resultsPage.selectBrand(brandName);
             resultsPage.clickApply(p.getProperty("apply.button"));
+
             String  url      = driver.getCurrentUrl();
             boolean hasPrice = url.contains(String.valueOf(maxPrice));
             boolean hasBrand = url.toLowerCase().contains(brandName.toLowerCase());
             boolean pass     = hasPrice && hasBrand;
+
+            // FIX: save the filtered URL here so tc007 can return to it later
+            filteredResultsUrl = url;
+
             log("TC_003", "Apply Price + Brand Filter",
                     "Set max price Rs." + maxPrice + " → Select brand '" + brandName + "' → Click APPLY",
                     "URL contains Rs." + maxPrice + " and '" + brandName + "'",
@@ -135,12 +147,14 @@ public class PepperfryTest {
                 return;
             }
 
+            // FIX: use a fixed TC_004 prefix; serial is incremented once inside log()
+            //      Previously serial was used for String.format AND inside log(), causing
+            //      the counter to jump by 2 per product instead of 1.
             for (int i = 0; i < products.size(); i++) {
-                String  tcId     = String.format("TC_%03d", serial);
-                String  name     = products.get(i)[0];
-                int     price    = Integer.parseInt(products.get(i)[1].replaceAll("[^0-9]", ""));
-                boolean pass     = price < maxPrice;
-                log(tcId, "Verify Product Price < Rs." + maxPrice,
+                String  name  = products.get(i)[0];
+                int     price = Integer.parseInt(products.get(i)[1].replaceAll("[^0-9]", ""));
+                boolean pass  = price < maxPrice;
+                log("TC_004_" + (i + 1), "Verify Product Price < Rs." + maxPrice,
                         "Check price of: " + name,
                         "Price < Rs." + maxPrice,
                         "Actual Price: Rs." + price,
@@ -205,6 +219,25 @@ public class PepperfryTest {
     @Test(priority = 7)
     public void tc007_VerifyPriceBelow500() {
         try {
+            // FIX: after tc005/tc006 the browser is on the gift cards page.
+            //      Navigate back to the filtered results page before reading products.
+            if (filteredResultsUrl != null && !filteredResultsUrl.isEmpty()) {
+                driver.get(filteredResultsUrl);
+                homePage.pause(3000);
+                System.out.println("TC007: navigated back to filtered results: " + filteredResultsUrl);
+            } else {
+                // Fallback: re-run search + filter if we never saved the URL
+                homePage.open(p.getProperty("website.url"));
+                homePage.closePopupIfPresent();
+                homePage.searchFor(p.getProperty("search.keyword"));
+                resultsPage.openMoreFilters();
+                resultsPage.expandFilter(p.getProperty("price.filter"));
+                resultsPage.setMaxPrice(Integer.parseInt(p.getProperty("max.price")));
+                resultsPage.expandFilter(p.getProperty("brand.filter"));
+                resultsPage.selectBrand(p.getProperty("brand.name"));
+                resultsPage.clickApply(p.getProperty("apply.button"));
+            }
+
             List<String[]> products = resultsPage.getAllProductNamesAndPrices(1);
 
             if (products.isEmpty()) {
@@ -232,8 +265,10 @@ public class PepperfryTest {
         }
     }
 
+    // ── Helper ────────────────────────────────────────────────────────────────────
+
     private void log(String id, String name, String desc,
-                    String expected, String actual, String status) {
+                     String expected, String actual, String status) {
         reporter.logResult(serial++, id, name, desc, expected, actual, status);
     }
 }
