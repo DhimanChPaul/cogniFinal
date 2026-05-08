@@ -11,7 +11,7 @@ public class ExcelReporter {
     private final XSSFWorkbook workbook;
     private final Sheet        sheet;
     private final String       filePath;
-    private       int          rowNum = 1;
+    private int rowNum = 1;
 
     public ExcelReporter(String filePath) {
         this.filePath = filePath;
@@ -21,7 +21,6 @@ public class ExcelReporter {
         String[] headers = {
                 "S.No", "Test Case Name", "Expected Result", "Actual Result", "Status"
         };
-
         Row header = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
             header.createCell(i).setCellValue(headers[i]);
@@ -29,7 +28,6 @@ public class ExcelReporter {
     }
 
     public void logResult(int sno, String tcName, String expected, String actual, String status) {
-
         Row row = sheet.createRow(rowNum++);
         row.createCell(0).setCellValue(sno);
         row.createCell(1).setCellValue(tcName);
@@ -41,8 +39,10 @@ public class ExcelReporter {
     public void save() {
         try {
             java.io.File file = new java.io.File(filePath);
-            file.getParentFile().mkdirs();   // ← creates folder if missing
-
+            java.io.File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs(); // create parent directories if missing
+            }
             if (file.exists() && !file.canWrite()) {
                 System.err.println("ERROR: Excel file is open. Close it first!");
                 return;
