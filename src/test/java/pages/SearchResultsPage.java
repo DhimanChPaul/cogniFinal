@@ -276,24 +276,9 @@ public class SearchResultsPage extends BaseClass {
         System.out.println("Max price set to: ₹" + maxPrice);
     }
 
-    /**
-     * Selects a brand by EXACT name only — no contains().
-     *
-     * FIX: The brand list in the filter panel is a scrollable container.
-     * WoodenMood may not be in the initial viewport, so the old code
-     * fell through to contains('Woodsworth') and matched the wrong brand.
-     *
-     * Strategy:
-     * 1. Try label[@for='brandName'] — fastest, matches FOR attribute exactly.
-     * 2. Try label[normalize-space(text())='brandName'] — exact visible text.
-     * 3. If not found, scroll the brand list container down in small steps
-     *    and retry both locators after each scroll — up to 5 scroll attempts.
-     * 4. Never use contains() — prevents accidental partial matches.
-     */
     public void selectBrand(String brandName) {
         pause(1000);
 
-        // The scrollable brand list container inside the filter panel
         By brandListContainer = By.xpath(
                 "//accordion-group[.//accordion-heading[normalize-space()='Brand']]" +
                         "//div[contains(@class,'filter-scroll') or contains(@class,'brand-list') " +
@@ -302,9 +287,8 @@ public class SearchResultsPage extends BaseClass {
         By byFor  = By.xpath(String.format("//label[@for='%s']", brandName));
         By byText = By.xpath(String.format("//label[normalize-space(text())='%s']", brandName));
 
-        WebElement brand = findBrandElement(byFor, byText);
 
-        // If not found in initial view, scroll the brand list and retry
+        WebElement brand = findBrandElement(byFor, byText);
         if (brand == null) {
             System.out.println("Brand not in initial view — scrolling brand list to find: " + brandName);
 
@@ -313,7 +297,6 @@ public class SearchResultsPage extends BaseClass {
             WebElement scrollContainer = containers.isEmpty() ? null : containers.get(0);
 
             for (int attempt = 1; attempt <= 8; attempt++) {
-                // Scroll the container if found, otherwise scroll the whole panel
                 if (scrollContainer != null) {
                     js.executeScript("arguments[0].scrollTop += 150;", scrollContainer);
                 } else {
@@ -336,7 +319,6 @@ public class SearchResultsPage extends BaseClass {
             }
         }
 
-        // Final debug dump if still not found
         if (brand == null) {
             System.out.println("=== BRAND NOT FOUND — all labels in DOM ===");
             List<WebElement> allLabels = driver.findElements(By.xpath("//label"));
@@ -357,10 +339,10 @@ public class SearchResultsPage extends BaseClass {
         System.out.println("Selected brand: " + brandName);
     }
 
-    /**
-     * Tries both exact locators instantly using findElements (no timeout penalty).
-     * Returns the first matching element, or null if neither matches.
-     */
+
+
+
+
     private WebElement findBrandElement(By byFor, By byText) {
         List<WebElement> found = driver.findElements(byFor);
         if (!found.isEmpty()) {

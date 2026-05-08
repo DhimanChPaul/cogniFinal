@@ -15,22 +15,12 @@ import io.cucumber.java.Scenario;
 
 public class Hooks {
 
-    /**
-     * FIX: @BeforeAll runs before Cucumber instantiates any glue class.
-     * PepperfrySteps calls BaseClass.getDriver() in its constructor — if the
-     * driver is null at that point the entire run fails with NullPointerException.
-     *
-     * Solution: initialize + configure the driver here, BEFORE step definitions
-     * are constructed. Cucumber guarantees @BeforeAll fires first.
-     */
     @BeforeAll
     public static void globalSetup() throws IOException {
         if (BaseClass.getDriver() == null) {
             WebDriver driver = BaseClass.initilizeBrowser();
             driver.manage().window().maximize();
 
-            // Use only explicit waits (WebDriverWait) in page objects — no implicitlyWait.
-            // Mixing implicit + explicit waits produces unpredictable timeout behaviour.
             java.time.Duration pageLoad = java.time.Duration.ofSeconds(60);
             java.time.Duration script   = java.time.Duration.ofSeconds(30);
             driver.manage().timeouts().pageLoadTimeout(pageLoad);
@@ -53,9 +43,7 @@ public class Hooks {
         }
     }
 
-    /**
-     * Attaches a screenshot to the Cucumber HTML report for every failed step.
-     */
+
     @AfterStep
     public void addScreenshot(Scenario scenario) {
         if (scenario.isFailed()) {

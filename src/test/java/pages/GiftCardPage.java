@@ -218,18 +218,11 @@ public class GiftCardPage extends BaseClass {
         PageFactory.initElements(driver, this);
     }
 
-    /**
-     * FIX: After clicking the birthday card, the gift card form loads
-     * asynchronously. The old pause(2000) was not enough.
-     * Now waits up to 20 seconds for the recipient name field to appear
-     * before proceeding — this ensures the form is fully loaded.
-     */
+
     public void selectBirthdayCard() {
         wait.until(ExpectedConditions.elementToBeClickable(birthdayCard));
         jsClick(birthdayCard);
         System.out.println("Birthday card clicked.");
-
-        // Wait for the form to load — recipientName is the first field
         wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//input[@formcontrolname='rname']")));
         pause(1000);

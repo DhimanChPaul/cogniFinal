@@ -127,13 +127,6 @@ public class BaseClass {
 
     protected static WebDriver driver;
     private static Properties  p;
-
-    /**
-     * Stores the filtered results URL after filters are applied in scenario 3.
-     * Kept here in BaseClass because this class is loaded ONCE by the JVM
-     * and never reset between Cucumber scenario instances.
-     * PepperfrySteps reads and writes this field across all scenarios.
-     */
     public static String filteredResultsUrl = null;
 
     public static WebDriver initilizeBrowser() {
@@ -172,9 +165,9 @@ public class BaseClass {
 
     public BaseClass(WebDriver driver) {
         BaseClass.driver = driver;
-        this.wait    = new WebDriverWait(driver, Duration.ofSeconds(20));
-        this.js      = (JavascriptExecutor) driver;
-        this.actions = new Actions(driver);
+        this.wait= new WebDriverWait(driver, Duration.ofSeconds(20));
+        this.js= (JavascriptExecutor) driver;
+        this.actions= new Actions(driver);
     }
 
     public BaseClass() {}
@@ -192,6 +185,7 @@ public class BaseClass {
     }
 
     protected void jsClick(WebElement element) {
+
         js.executeScript("arguments[0].click();", element);
     }
 

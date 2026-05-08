@@ -21,7 +21,6 @@ public class projectSshot {
                 }
                 cleaned = true;
             }
-
             File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             File dest = new File(DIR + count++ + "_" + label + ".png");
             dest.getParentFile().mkdirs();

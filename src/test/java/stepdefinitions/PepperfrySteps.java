@@ -29,8 +29,8 @@ public class PepperfrySteps {
     public static final String EXCEL_PATH = "ExcelData/PepperfryTestResults.xlsx";
 
     public PepperfrySteps() throws IOException {
-        this.driver      = BaseClass.getDriver();
-        this.p           = BaseClass.getProperties();
+        this.driver = BaseClass.getDriver();
+        this.p= BaseClass.getProperties();
         this.homePage    = new HomePage(driver);
         this.resultsPage = new SearchResultsPage(driver);
         this.giftPage    = new GiftCardPage(driver);
@@ -39,7 +39,7 @@ public class PepperfrySteps {
         }
     }
 
-    // ── Scenario 1: Home Decor Hover ──────────────────────────────────────────────
+    // Scenario 1:base page
 
     @Given("the user launches the Pepperfry website")
     public void the_user_launches_the_pepperfry_website() {
@@ -79,7 +79,7 @@ public class PepperfrySteps {
         }
     }
 
-    // ── Scenario 2: Search + Filter ───────────────────────────────────────────────
+    // Scenario 2: Search + Filter
 
     @Given("the user opens the Pepperfry website")
     public void the_user_opens_the_pepperfry_website() {
@@ -139,7 +139,7 @@ public class PepperfrySteps {
         }
     }
 
-    // ── Scenario 3: Gift Card Sender Email Validation ─────────────────────────────
+    // Scenario 3: Gift Card
 
     @Given("the user navigates to the Pepperfry home page")
     public void the_user_navigates_to_the_pepperfry_home_page() {
