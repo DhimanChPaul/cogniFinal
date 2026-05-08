@@ -32,10 +32,10 @@ public class ExcelReporter {
 
         Row row = sheet.createRow(rowNum++);
         row.createCell(0).setCellValue(sno);
-        row.createCell(2).setCellValue(tcName);
-        row.createCell(4).setCellValue(expected);
-        row.createCell(5).setCellValue(actual);
-        row.createCell(6).setCellValue(status);
+        row.createCell(1).setCellValue(tcName);
+        row.createCell(2).setCellValue(expected);
+        row.createCell(3).setCellValue(actual);
+        row.createCell(4).setCellValue(status);
     }
 
     public void save() {
